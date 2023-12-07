@@ -2,6 +2,19 @@ import type { Readable } from "svelte/motion";
 import { writable, readable } from "svelte/store";
 
 export const currentWord = writable("");
+export const alphabet = 'qwertyuiopasdfghjklzxcvbnm';
+interface ILetterDict {
+    [id: string]: number;
+}
+
+export const letterStatus = writable<ILetterDict>({}, (set) => {
+    const result: ILetterDict = {};
+    [...alphabet].forEach(l => {
+        result[l] = 0;
+    });
+    set(result);
+});
+
 // const length = Math.floor(Math.random() * (9 - 4 + 1) + 4);
 export const allWords: Readable<string[]> = readable([], (set) => {
     fetch('https://random-word-api.herokuapp.com/all')

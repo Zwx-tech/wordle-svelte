@@ -5,3 +5,10 @@
 body {
     font-family: Montserrat, "Open Sans", sans-serif;
 }
+
+@layer components {
+    .match {
+      @apply bg-green-500;
+    }
+    /* ... */
+  }

@@ -1,8 +1,9 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import Word from "../components/word.svelte";
-    import { currentWord, fetchWord, allWords } from "../stores/store";
+    import { currentWord, fetchWord, allWords, letterStatus } from "../stores/store";
   import Alert from "../components/alert.svelte";
+  import Keyboard from "../components/keyboard.svelte";
 
     // setup
     let wordLength = 5;
@@ -14,8 +15,8 @@
         isVisible: false,
         message: "fshhfshf",
     }
-    allWords.subscribe(value => {
-        console.log(value)
+    letterStatus.subscribe(v => {
+        console.log(v);
     })
     // fetch World from api onMount
     onMount(async () => {
@@ -85,24 +86,24 @@
 
     function checkWord(word: string): Boolean {
         const correctLetters = [...$currentWord.toLowerCase()];
-        const reuslt = Array.from(word).map((letter, i) => {
+        Array.from(word).forEach((letter, i) => {
             if(correctLetters[i] === letter) {
-                correctLetters[i] = '/*/';
-                return 2;
+                $letterStatus[letter] = 3;
+                correctLetters[i] = '###';
             }
+        });
+        Array.from(word).forEach((letter, i) => {
             if(correctLetters.some(l => l===letter)){
                 correctLetters.some((l, j) => {
                     if(l===letter){
+                        $letterStatus[letter] = 2;
                         correctLetters[j] = '/*/';
                         return true;
                     }
                     return false
-                })
-                return 1;
+                }) 
             }
-            return 0;
         });
-        console.log(reuslt)
         return true;
     }
 
@@ -120,6 +121,7 @@
                 <Word currentLetters={word} />
             {/each}
         </div>
+        <Keyboard onKeyPress={(l) => console.log(l)}></Keyboard>
     {:else}
         <div class="text-center">
             Loading...

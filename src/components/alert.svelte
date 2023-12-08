@@ -2,8 +2,9 @@
     export let isVisible = true;
     export let message = "";
     export let type = "info"; // You can set default type to 'info', 'success', 'warning', or 'error'
+    export let hasTimeout=false;
     $: {
-        if(isVisible) {
+        if(isVisible && hasTimeout) {
             setTimeout(() => isVisible=false, 3000);
         }
     }

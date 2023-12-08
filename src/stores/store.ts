@@ -1,11 +1,30 @@
 import type { Readable } from "svelte/motion";
-import { writable, readable } from "svelte/store";
+import { writable, readable, type Writable } from "svelte/store";
+
+export function getRandomArbitrary(min: number, max: number) {
+    return Math.round(Math.random() * (max - min) + min);
+  }
 
 export const currentWord = writable("");
+export const currentGuess = writable(0);
+export const preferredColorScheme = writable('light');
+export const prefersContrast = writable(false);
+export const wordCheck = writable(false);
+export const isHintActive = writable(false);
 export const alphabet = 'qwertyuiopasdfghjklzxcvbnm';
-interface ILetterDict {
+export const inputLetters: Writable<string[][]> = writable([])
+export const wordLength = writable(getRandomArbitrary(5, 9));
+
+export const allWords: Writable<string[]> = writable([], (set) => {
+    fetch('https://random-word-api.herokuapp.com/all')
+        .then(res => res.json())  
+        .then(data => set(data));  
+});
+
+export interface ILetterDict {
     [id: string]: number;
 }
+
 
 export const letterStatus = writable<ILetterDict>({}, (set) => {
     const result: ILetterDict = {};
@@ -16,24 +35,4 @@ export const letterStatus = writable<ILetterDict>({}, (set) => {
 });
 
 // const length = Math.floor(Math.random() * (9 - 4 + 1) + 4);
-export const allWords: Readable<string[]> = readable([], (set) => {
-    fetch('https://random-word-api.herokuapp.com/all')
-        .then(res => res.json())  
-        .then(data => set(data));  
-})
 
-export async function fetchWord(length: number) {
-    let url = `https://random-word-api.herokuapp.com/word?length=${length}`;
-    
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        currentWord.set(data[0].toUpperCase()); 
-    } catch (error) {
-        console.error('Fetch error: ', error);
-        currentWord.set(""); 
-    }
-}
